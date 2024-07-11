@@ -1,16 +1,14 @@
 const express = require("express");
-const app = express();
-const purchase = require("../controller/purchase");
+const router = express.Router();
+const purchaseController = require("../controller/purchase");
 
 // Add Purchase
-app.post("/add", purchase.addPurchase);
+router.post("/add", purchaseController.addPurchase);
 
 // Get All Purchase Data
-app.get("/get/:userID", purchase.getPurchaseData);
+router.get("/get", purchaseController.getPurchaseData);
 
-app.get("/get/:userID/totalpurchaseamount", purchase.getTotalPurchaseAmount);
+// Get Total Purchase Amount
+router.get("/totalpurchaseamount", purchaseController.getTotalPurchaseAmount);
 
-module.exports = app;
-
-// http://localhost:4000/api/purchase/add POST
-// http://localhost:4000/api/purchase/get GET
+module.exports = router;

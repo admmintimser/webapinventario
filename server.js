@@ -4,10 +4,11 @@ const productRoute = require("./router/product");
 const storeRoute = require("./router/store");
 const purchaseRoute = require("./router/purchase");
 const salesRoute = require("./router/sales");
+const proveedorRoutes = require("./router/proveedor");
 const cors = require("cors");
-const helmet = require("helmet");
 const User = require("./models/users");
 const Product = require("./models/Product");
+const Store = require("./models/store");
 
 
 const app = express();
@@ -48,6 +49,9 @@ app.use("/api/purchase", purchaseRoute);
 
 // Sales API
 app.use("/api/sales", salesRoute);
+
+// Rutas de proveedores
+app.use("/api/proveedor", proveedorRoutes);
 
 // ------------- Signin --------------
 let userAuthCheck;

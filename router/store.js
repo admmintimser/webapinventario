@@ -1,11 +1,17 @@
 const express = require("express");
-const app = express();
-const store = require("../controller/store");
+const router = express.Router();
+const storeController = require("../controller/store");
 
 // Add Store 
-app.post("/add", store.addStore);
+router.post("/add", storeController.addStore);
 
-// Get All Store
-app.get("/get/:userID", store.getAllStores)
+// Get All Stores
+router.get("/get", storeController.getAllStores);
 
-module.exports = app;
+// Add Product to Store
+router.post("/add-product/:storeId", storeController.addProductToStore);
+
+// Bulk Add Stores
+router.post("/bulk-add", storeController.bulkAddStores);
+
+module.exports = router;

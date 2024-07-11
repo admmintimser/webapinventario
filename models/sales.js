@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const SaleSchema = new mongoose.Schema(
   {
-    userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-      required: true,
-    },
     ProductID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "product",
@@ -25,10 +20,16 @@ const SaleSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    TotalSaleAmount: {
-      type: Number,
-      required: true,
+    AreaResponsable:{
+      type: String,
     },
+    Responsable:{
+      type: String,
+    },
+    ValeSalida:{
+      type: String,
+    },
+    
   },
   { timestamps: true }
 );

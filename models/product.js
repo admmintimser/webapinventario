@@ -2,32 +2,31 @@ const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema(
   {
-    userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'users',
-      required: true,
-    },
     name: {
       type: String,
-      required: true,
     },
     manufacturer: {
       type: String,
-      required: true,
     },
     stock: {
       type: Number,
-      required: true,
     },
-    description: String,
+    categoria: String,
+    almacen: String,
+    sku: String,
+    descripcion: String,
+    marca: String,
+    presentacion: String,
+    UM: String,
+    cantidadpresentacion: String,
     codigointernto: String,
     moneda: String,
     prioridad: String,
-    presentacion: String
+    tiempoEntrega: String,
+    transito: String,
   },
   { timestamps: true }
 );
 
-
-const Product = mongoose.model("product", ProductSchema);
+const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
 module.exports = Product;

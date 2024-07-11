@@ -1,16 +1,24 @@
-const Product = require("../models/Product");
+const Product = require("../models/product");
 const Purchase = require("../models/purchase");
 const Sales = require("../models/sales");
 
 // Add Post
 const addProduct = (req, res) => {
-  console.log("req: ", req.body.userId);
   const addProduct = new Product({
-    userID: req.body.userId,
     name: req.body.name,
     manufacturer: req.body.manufacturer,
-    stock: 0,
-    description: req.body.description,
+    stock: req.body.stock || 0,
+    categoria: req.body.categoria,
+    sku: req.body.sku,
+    descripcion: req.body.descripcion,
+    marca: req.body.marca,
+    presentacion: req.body.presentacion,
+    UM: req.body.UM,
+    cantidadpresentacion: req.body.cantidadpresentacion,
+    codigointernto: req.body.codigointernto,
+    moneda: req.body.moneda,
+    prioridad: req.body.prioridad,
+    tiempoentrega: req.body.tiempoentrega,
   });
 
   addProduct
@@ -23,26 +31,28 @@ const addProduct = (req, res) => {
     });
 };
 
+// Bulk Add Products
+const bulkAddProducts = async (req, res) => {
+  try {
+    const products = req.body.products;
+    const results = await Product.insertMany(products);
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(402).send(err);
+  }
+};
+
 // Get All Products
 const getAllProducts = async (req, res) => {
-  const findAllProducts = await Product.find({
-    userID: req.params.userId,
-  }).sort({ _id: -1 }); // -1 for descending;
+  const findAllProducts = await Product.find({}).sort({ _id: -1 }); // -1 for descending;
   res.json(findAllProducts);
 };
 
 // Delete Selected Product
 const deleteSelectedProduct = async (req, res) => {
-  const deleteProduct = await Product.deleteOne(
-    { _id: req.params.id }
-  );
-  const deletePurchaseProduct = await Purchase.deleteOne(
-    { ProductID: req.params.id }
-  );
-
-  const deleteSaleProduct = await Sales.deleteOne(
-    { ProductID: req.params.id }
-  );
+  const deleteProduct = await Product.deleteOne({ _id: req.params.id });
+  const deletePurchaseProduct = await Purchase.deleteOne({ ProductID: req.params.id });
+  const deleteSaleProduct = await Sales.deleteOne({ ProductID: req.params.id });
   res.json({ deleteProduct, deletePurchaseProduct, deleteSaleProduct });
 };
 
@@ -54,14 +64,23 @@ const updateSelectedProduct = async (req, res) => {
       {
         name: req.body.name,
         manufacturer: req.body.manufacturer,
-        description: req.body.description,
+        descripcion: req.body.descripcion,
+        stock: req.body.stock,
+        categoria: req.body.categoria,
+        sku: req.body.sku,
+        marca: req.body.marca,
+        presentacion: req.body.presentacion,
+        UM: req.body.UM,
+        cantidadpresentacion: req.body.cantidadpresentacion,
+        codigointernto: req.body.codigointernto,
+        moneda: req.body.moneda,
+        prioridad: req.body.prioridad,
+        tiempoentrega: req.body.tiempoentrega,
       },
       { new: true }
     );
-    console.log(updatedResult);
     res.json(updatedResult);
   } catch (error) {
-    console.log(error);
     res.status(402).send("Error");
   }
 };
@@ -77,6 +96,7 @@ const searchProduct = async (req, res) => {
 
 module.exports = {
   addProduct,
+  bulkAddProducts,
   getAllProducts,
   deleteSelectedProduct,
   updateSelectedProduct,
