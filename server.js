@@ -5,6 +5,7 @@ const storeRoute = require("./router/store");
 const purchaseRoute = require("./router/purchase");
 const salesRoute = require("./router/sales");
 const proveedorRoutes = require("./router/proveedor");
+const helmet = require("helmet");
 const cors = require("cors");
 const User = require("./models/users");
 const Product = require("./models/product");
