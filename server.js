@@ -20,6 +20,7 @@ const PORT = 8080;
 main();
 const allowedOrigins = [
   'https://inventariotimser.azurewebsites.net',
+  'https://apiwebinventariotimser.azurewebsites.net'
 ];
 
 // Flexible CORS configuration
