@@ -1,5 +1,4 @@
 const express = require("express");
-const { main } = require("./models/index");
 const proveedorRoutes = require("./router/proveedor");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -21,29 +20,25 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 
 
 const app = express();
-main();
-const allowedOrigins = [
-  'https://inventariotimser.azurewebsites.net',
-  'https://apiwebinventariotimser.azurewebsites.net'
-];
 
-// Flexible CORS configuration
+
+const allowedOrigins = ['https://inventariotimser.azurewebsites.net'];
+
 const corsOptions = {
   origin: (origin, callback) => {
-      if (!origin) return callback(null, true);  // Allow requests with no origin (like mobile apps or curl requests)
-      
-      if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-      } else {
-          console.warn(`Blocked CORS request from disallowed origin: ${origin}`);
-          callback(new Error('Not allowed by CORS'), false);
-      }
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
-  method: [
-      "GET", "POST", "DELETE", "PUT"
-  ],
+  methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
   optionsSuccessStatus: 200
 };
+
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
