@@ -38,7 +38,6 @@ const corsOptions = {
   method: [
       "GET", "POST", "DELETE", "PUT"
   ],
-  credentials: true , // Allow credentials (cookies, authorization headers, etc.)
   optionsSuccessStatus: 200
 };
 
