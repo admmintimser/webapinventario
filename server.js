@@ -3,6 +3,11 @@ const { main } = require("./models/index");
 const proveedorRoutes = require("./router/proveedor");
 const helmet = require("helmet");
 const cors = require("cors");
+const connectDB = require("./config/db");
+const PORT = process.env.PORT || 8080;
+
+connectDB();
+
 
 const productoRoutes = require('./routes/productoRoutes');
 const entradaRoutes = require('./routes/entradaRoutes');
@@ -16,7 +21,6 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 
 
 const app = express();
-const PORT = 8080;
 main();
 const allowedOrigins = [
   'https://inventariotimser.azurewebsites.net',
