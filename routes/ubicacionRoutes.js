@@ -12,4 +12,6 @@ router.get('/:id', ubicacionController.getUbicacion);
 router.put('/:id', ubicacionController.updateUbicacion);
 router.delete('/:id', ubicacionController.deleteUbicacion);
 
+router.post('/bulk-upload', ubicacionController.bulkUploadUbicaciones);
+
 module.exports = router;

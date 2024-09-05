@@ -1,6 +1,8 @@
 // controllers/ubicacionController.js
 const Ubicacion = require('../models/Ubicacion');
 const Inventario = require('../models/Inventario');
+const Producto = require('../models/Producto');
+const mongoose = require('mongoose');
 
 exports.getUbicaciones = async (req, res) => {
     try {
@@ -10,7 +12,7 @@ exports.getUbicaciones = async (req, res) => {
         // For each location, count the number of products associated with it
         const ubicacionesWithProductCount = await Promise.all(
             ubicaciones.map(async (ubicacion) => {
-                const productCount = await Inventario.countDocuments({ ubicacion: ubicacion._id });
+                const productCount = await Producto.countDocuments({ ubicacion: ubicacion._id });
                 return {
                     ...ubicacion.toObject(),
                     productCount, // Add the product count to each location
@@ -24,14 +26,20 @@ exports.getUbicaciones = async (req, res) => {
     }
 };
 
+// Obtener productos por ubicación
 exports.getProductsByUbicacion = async (req, res) => {
     try {
-        const products = await Inventario.find({ ubicacion: req.params.id }).populate('producto');
-        res.status(200).json(products);
+        const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
+        if (inventarios.length === 0) {
+            return res.status(404).json({ error: 'No hay productos en esta ubicación' });
+        }
+        res.status(200).json(inventarios);  // Devolvemos los inventarios, que ahora incluyen el producto y la cantidad disponible
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
+
 
 exports.createUbicacion = async (req, res) => {
     try {
@@ -76,5 +84,20 @@ exports.deleteUbicacion = async (req, res) => {
         res.status(204).json({ message: "Ubicación eliminada" });
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+};
+
+exports.bulkUploadUbicaciones = async (req, res) => {
+    try {
+        const ubicaciones = req.body; 
+        
+        if (!Array.isArray(ubicaciones)) {
+            return res.status(400).json({ error: 'El formato del archivo debe ser un array de ubicaciones' });
+        }
+
+        const savedUbicaciones = await Ubicacion.insertMany(ubicaciones);
+        res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
+    } catch (error) {
+        res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
     }
 };

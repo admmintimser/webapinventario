@@ -9,6 +9,7 @@ const proveedorSchema = new mongoose.Schema({
     activo: { type: Boolean, default: true },
     clasificacion1: { type: String },
     clasificacion2: { type: String },
+    detalles: { type: String },
 }, {
     timestamps: true,
 });

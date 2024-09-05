@@ -10,9 +10,9 @@ const productoSchema = new mongoose.Schema({
     unidadMedida: { type: String },
     codigoInterno: { type: String, unique: true },
     sku: { type: String, unique: true },
-    ubicacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Ubicacion' },
     cantidadPorEmpaque: { type: Number, required: true },
     alcancePreventix: { type: Boolean, default: false },
+    temperaturaAlmacenamiento: {type: Number}
 }, {
     timestamps: true,
 });

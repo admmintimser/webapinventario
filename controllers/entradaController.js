@@ -1,83 +1,103 @@
-// controllers/entradaController.js
-const Entrada = require('../models/Entrada');
-const Inventario = require('../models/Inventario'); 
+// controllers/ubicacionController.js
+const Ubicacion = require('../models/Ubicacion');
+const Inventario = require('../models/Inventario');
 const Producto = require('../models/Producto');
+const mongoose = require('mongoose');
 
-exports.createEntrada = async (req, res) => {
+exports.getUbicaciones = async (req, res) => {
     try {
-        const entrada = new Entrada(req.body);
-        await entrada.save();
+        // Fetch all locations
+        const ubicaciones = await Ubicacion.find();
 
-        // Find the product in the inventory
-        let inventario = await Inventario.findOne({ producto: entrada.producto, lote: entrada.lote });
+        // For each location, count the number of products associated with it
+        const ubicacionesWithProductCount = await Promise.all(
+            ubicaciones.map(async (ubicacion) => {
+                const productCount = await Producto.countDocuments({ ubicacion: ubicacion._id });
+                return {
+                    ...ubicacion.toObject(),
+                    productCount, // Add the product count to each location
+                };
+            })
+        );
 
-        // Fetch the product details to get `cantidadPorEmpaque`
-        const producto = await Producto.findById(entrada.producto);
-        const cantidadToAdd = entrada.cantidadEmpaques * producto.cantidadPorEmpaque;
-
-        if (inventario) {
-            // Update existing inventory
-            inventario.cantidadDisponible += cantidadToAdd;
-            inventario.caducidad = entrada.fechaCaducidad; // Update the expiration date if necessary
-            await inventario.save();
-        } else {
-            // Create a new inventory record if the product/lote combination doesn't exist
-            inventario = new Inventario({
-                producto: entrada.producto,
-                cantidadDisponible: cantidadToAdd,
-                caducidad: entrada.fechaCaducidad,
-                lote: entrada.lote,
-            });
-            await inventario.save();
-        }
-
-        res.status(201).json(entrada);
+        res.status(200).json(ubicacionesWithProductCount);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-exports.getEntradas = async (req, res) => {
+// Obtener productos por ubicación
+exports.getProductsByUbicacion = async (req, res) => {
     try {
-        const entradas = await Entrada.find().populate('producto');
-        res.status(200).json(entradas);
+        const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
+        if (inventarios.length === 0) {
+            return res.status(404).json({ error: 'No hay productos en esta ubicación' });
+        }
+        res.status(200).json(inventarios);  // Devolvemos los inventarios, que ahora incluyen el producto y la cantidad disponible
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-exports.getEntrada = async (req, res) => {
+
+
+exports.createUbicacion = async (req, res) => {
     try {
-        const entrada = await Entrada.findById(req.params.id).populate('producto');
-        if (!entrada) {
-            return res.status(404).json({ error: "Entrada no encontrada" });
-        }
-        res.status(200).json(entrada);
+        const ubicacion = new Ubicacion(req.body);
+        await ubicacion.save();
+        res.status(201).json(ubicacion);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-exports.updateEntrada = async (req, res) => {
+exports.getUbicacion = async (req, res) => {
     try {
-        const entrada = await Entrada.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!entrada) {
-            return res.status(404).json({ error: "Entrada no encontrada" });
+        const ubicacion = await Ubicacion.findById(req.params.id);
+        if (!ubicacion) {
+            return res.status(404).json({ error: "Ubicación no encontrada" });
         }
-        res.status(200).json(entrada);
+        res.status(200).json(ubicacion);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-exports.deleteEntrada = async (req, res) => {
+exports.updateUbicacion = async (req, res) => {
     try {
-        const entrada = await Entrada.findByIdAndDelete(req.params.id);
-        if (!entrada) {
-            return res.status(404).json({ error: "Entrada no encontrada" });
+        const ubicacion = await Ubicacion.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!ubicacion) {
+            return res.status(404).json({ error: "Ubicación no encontrada" });
         }
-        res.status(204).json({ message: "Entrada eliminada" });
+        res.status(200).json(ubicacion);
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+};
+
+exports.deleteUbicacion = async (req, res) => {
+    try {
+        const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
+        if (!ubicacion) {
+            return res.status(404).json({ error: "Ubicación no encontrada" });
+        }
+        res.status(204).json({ message: "Ubicación eliminada" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+exports.bulkUploadUbicaciones = async (req, res) => {
+    try {
+        const ubicaciones = req.body; 
+        
+        if (!Array.isArray(ubicaciones)) {
+            return res.status(400).json({ error: 'El formato del archivo debe ser un array de ubicaciones' });
+        }
+
+        const savedUbicaciones = await Ubicacion.insertMany(ubicaciones);
+        res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
+    } catch (error) {
+        res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
     }
 };

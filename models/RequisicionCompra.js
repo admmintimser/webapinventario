@@ -6,7 +6,8 @@ const requisicionCompraSchema = new mongoose.Schema({
     nombreSolicitante: { type: String, required: true },
     productos: [{
         producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto', required: true },
-        cantidadSolicitada: { type: Number, required: true }
+        cantidadSolicitada: { type: Number, required: true },
+        estatus: { type: String, enum: ['Entregado', 'Transito', 'Pendiente'], default: 'Pendiente' }  // Nuevo campo
     }],
     fechaSolicitud: { type: Date, default: Date.now },
     folioCompra: { type: Number, unique: true },

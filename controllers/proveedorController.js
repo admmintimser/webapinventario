@@ -55,3 +55,15 @@ exports.deleteProveedor = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+exports.uploadProveedoresMasivos = async (req, res) => {
+    try {
+        const proveedores = req.body.proveedores; // Supone que el JSON tendrá un array de proveedores
+
+        // Guardar los proveedores en la base de datos
+        const result = await Proveedor.insertMany(proveedores);
+
+        res.status(201).json({ message: 'Proveedores subidos exitosamente', data: result });
+    } catch (error) {
+        res.status(400).json({ error: 'Error al subir los proveedores: ' + error.message });
+    }
+};

@@ -8,5 +8,6 @@ router.get('/', proveedorController.getProveedores);
 router.get('/:id', proveedorController.getProveedor);
 router.put('/:id', proveedorController.updateProveedor);
 router.delete('/:id', proveedorController.deleteProveedor);
+router.post('/upload-masivo', proveedorController.uploadProveedoresMasivos);
 
 module.exports = router;
