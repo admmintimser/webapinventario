@@ -1,6 +1,10 @@
-const mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import mongoose from 'mongoose';
+import mongooseSequence from 'mongoose-sequence';
 
+// Initialize the AutoIncrement plugin with mongoose
+const AutoIncrement = mongooseSequence(mongoose);
+
+// Define the schema
 const requisicionSalidaSchema = new mongoose.Schema({
   area: { type: String, required: true },
   nombreSolicitante: { type: String, required: true },
@@ -14,6 +18,9 @@ const requisicionSalidaSchema = new mongoose.Schema({
   folioSalida: { type: Number, unique: true },
 });
 
+// Apply the AutoIncrement plugin to the schema
 requisicionSalidaSchema.plugin(AutoIncrement, { inc_field: 'folioSalida' });
 
-module.exports = mongoose.model('RequisicionSalida', requisicionSalidaSchema);
+// Export the model
+export const RequisicionSalida = mongoose.model('RequisicionSalida', requisicionSalidaSchema);
+

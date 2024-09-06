@@ -1,7 +1,6 @@
-// controllers/proveedorController.js
-const Proveedor = require('../models/Proveedor');
+import { Proveedor } from "../models/Proveedor.js";
 
-exports.createProveedor = async (req, res) => {
+  export const createProveedor = async (req, res) => {
     try {
         const proveedor = new Proveedor(req.body);
         await proveedor.save();
@@ -11,7 +10,7 @@ exports.createProveedor = async (req, res) => {
     }
 };
 
-exports.getProveedores = async (req, res) => {
+  export const getProveedores = async (req, res) => {
     try {
         const proveedores = await Proveedor.find();
         res.status(200).json(proveedores);
@@ -20,7 +19,7 @@ exports.getProveedores = async (req, res) => {
     }
 };
 
-exports.getProveedor = async (req, res) => {
+  export const getProveedor = async (req, res) => {
     try {
         const proveedor = await Proveedor.findById(req.params.id);
         if (!proveedor) {
@@ -32,7 +31,7 @@ exports.getProveedor = async (req, res) => {
     }
 };
 
-exports.updateProveedor = async (req, res) => {
+  export const updateProveedor = async (req, res) => {
     try {
         const proveedor = await Proveedor.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!proveedor) {
@@ -44,7 +43,7 @@ exports.updateProveedor = async (req, res) => {
     }
 };
 
-exports.deleteProveedor = async (req, res) => {
+  export const deleteProveedor = async (req, res) => {
     try {
         const proveedor = await Proveedor.findByIdAndDelete(req.params.id);
         if (!proveedor) {
@@ -55,7 +54,7 @@ exports.deleteProveedor = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
-exports.uploadProveedoresMasivos = async (req, res) => {
+  export const uploadProveedoresMasivos = async (req, res) => {
     try {
         const proveedores = req.body.proveedores; // Supone que el JSON tendrá un array de proveedores
 

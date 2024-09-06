@@ -1,12 +1,19 @@
-// routes/salidaRoutes.js
-const express = require('express');
+import express from "express";
+import {
+    createSalida,  
+    getSalidas,
+    getSalida,  
+    updateSalida,  
+    deleteSalida
+    }  from "../controllers/salidaController.js";
+
 const router = express.Router();
-const salidaController = require('../controllers/salidaController');
 
-router.post('/', salidaController.createSalida);
-router.get('/', salidaController.getSalidas);
-router.get('/:id', salidaController.getSalida);
-router.put('/:id', salidaController.updateSalida);
-router.delete('/:id', salidaController.deleteSalida);
+router.post('/', createSalida);
+router.get('/', getSalidas);
+router.get('/:id', getSalida);
+router.put('/:id', updateSalida);
+router.delete('/:id',deleteSalida);
 
-module.exports = router;
+export default router;
+

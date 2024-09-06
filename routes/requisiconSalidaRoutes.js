@@ -1,12 +1,17 @@
-// routes/requisicionSalidaRoutes.js
-const express = require('express');
+import express from "express";
+import {
+    createRequisicionSalida,  
+    getRequisicionesSalida,
+    getRequisicionSalida,  
+    updateRequisicionSalida,  
+    deleteRequisicionSalida
+    }  from "../controllers/requisicionSalidaController.js";
+
 const router = express.Router();
-const requisicionSalidaController = require('../controllers/requisicionSalidaController');
+router.post('/',createRequisicionSalida);
+router.get('/',getRequisicionesSalida);
+router.get('/:id',getRequisicionSalida);
+router.put('/:id',updateRequisicionSalida);
+router.delete('/:id',deleteRequisicionSalida);
 
-router.post('/', requisicionSalidaController.createRequisicionSalida);
-router.get('/', requisicionSalidaController.getRequisicionesSalida);
-router.get('/:id', requisicionSalidaController.getRequisicionSalida);
-router.put('/:id', requisicionSalidaController.updateRequisicionSalida);
-router.delete('/:id', requisicionSalidaController.deleteRequisicionSalida);
-
-module.exports = router;
+export default router;

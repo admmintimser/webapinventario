@@ -1,103 +1,140 @@
-// controllers/ubicacionController.js
-const Ubicacion = require('../models/Ubicacion');
-const Inventario = require('../models/Inventario');
-const Producto = require('../models/Producto');
-const mongoose = require('mongoose');
+import { RequisicionCompra } from '../models/RequisicionCompra.js';
+import { Inventario } from '../models/Inventario.js';
+import { Entrada } from '../models/Entrada.js';
 
-exports.getUbicaciones = async (req, res) => {
+// Crear una nueva requisición de compra
+export const createRequisicionCompra = async (req, res) => {
     try {
-        // Fetch all locations
-        const ubicaciones = await Ubicacion.find();
-
-        // For each location, count the number of products associated with it
-        const ubicacionesWithProductCount = await Promise.all(
-            ubicaciones.map(async (ubicacion) => {
-                const productCount = await Producto.countDocuments({ ubicacion: ubicacion._id });
-                return {
-                    ...ubicacion.toObject(),
-                    productCount, // Add the product count to each location
-                };
-            })
-        );
-
-        res.status(200).json(ubicacionesWithProductCount);
+        const requisicionCompra = new RequisicionCompra(req.body);
+        await requisicionCompra.save();
+        res.status(201).json(requisicionCompra);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-// Obtener productos por ubicación
-exports.getProductsByUbicacion = async (req, res) => {
+// Obtener todas las requisiciones de compra
+export const getRequisicionesCompra = async (req, res) => {
     try {
-        const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
-        if (inventarios.length === 0) {
-            return res.status(404).json({ error: 'No hay productos en esta ubicación' });
+        const requisicionesCompra = await RequisicionCompra.find().populate('productos.producto');
+        res.status(200).json(requisicionesCompra);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Obtener una requisición de compra por ID
+export const getRequisicionCompra = async (req, res) => {
+    try {
+        const requisicionCompra = await RequisicionCompra.findById(req.params.id).populate('productos.producto');
+        if (!requisicionCompra) {
+            return res.status(404).json({ error: "Requisición de compra no encontrada" });
         }
-        res.status(200).json(inventarios);  // Devolvemos los inventarios, que ahora incluyen el producto y la cantidad disponible
+        res.status(200).json(requisicionCompra);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-
-
-exports.createUbicacion = async (req, res) => {
+// Actualizar el estatus de un producto en una requisición de compra
+export const updateProductStatus = async (req, res) => {
     try {
-        const ubicacion = new Ubicacion(req.body);
-        await ubicacion.save();
-        res.status(201).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+        const { id, productId } = req.params;
+        const { estatus } = req.body;
 
-exports.getUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findById(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(200).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.updateUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(200).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.deleteUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(204).json({ message: "Ubicación eliminada" });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.bulkUploadUbicaciones = async (req, res) => {
-    try {
-        const ubicaciones = req.body; 
-        
-        if (!Array.isArray(ubicaciones)) {
-            return res.status(400).json({ error: 'El formato del archivo debe ser un array de ubicaciones' });
+        if (!['Entregado', 'Transito', 'Pendiente'].includes(estatus)) {
+            return res.status(400).json({ error: 'Estatus no válido' });
         }
 
-        const savedUbicaciones = await Ubicacion.insertMany(ubicaciones);
-        res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
+        const requisicionCompra = await RequisicionCompra.findById(id);
+        if (!requisicionCompra) {
+            return res.status(404).json({ error: "Requisición de compra no encontrada" });
+        }
+
+        const producto = requisicionCompra.productos.find(p => p.producto.toString() === productId);
+        if (!producto) {
+            return res.status(404).json({ error: "Producto no encontrado en esta requisición" });
+        }
+
+        producto.estatus = estatus;
+        await requisicionCompra.save();
+
+        res.status(200).json({ message: "Estatus del producto actualizado", producto });
     } catch (error) {
-        res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Eliminar una requisición de compra
+export const deleteRequisicionCompra = async (req, res) => {
+    try {
+        const requisicionCompra = await RequisicionCompra.findByIdAndDelete(req.params.id);
+        if (!requisicionCompra) {
+            return res.status(404).json({ error: "Requisición de compra no encontrada" });
+        }
+        res.status(204).json({ message: "Requisición de compra eliminada" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Aprobar una requisición de compra
+export const approveRequisicionCompra = async (req, res) => {
+    try {
+        const requisicionCompra = await RequisicionCompra.findById(req.params.id).populate('productos.producto');
+        if (!requisicionCompra) {
+            return res.status(404).json({ error: "Requisición de compra no encontrada" });
+        }
+
+        if (requisicionCompra.aprobacion) {
+            return res.status(400).json({ error: "La requisición ya está aprobada" });
+        }
+
+        for (const item of requisicionCompra.productos) {
+            let existingInventario = await Inventario.findOne({ producto: item.producto._id });
+
+            if (existingInventario) {
+                existingInventario.cantidadDisponible += item.cantidadSolicitada;
+                await existingInventario.save();
+            } else {
+                existingInventario = new Inventario({
+                    producto: item.producto._id,
+                    cantidadDisponible: item.cantidadSolicitada,
+                    caducidad: item.producto.caducidad,
+                    lote: item.producto.lote
+                });
+                await existingInventario.save();
+            }
+
+            const nuevaEntrada = new Entrada({
+                producto: item.producto._id,
+                lote: item.producto.lote,
+                cantidadEmpaques: item.cantidadSolicitada,
+                temperatura: null,
+                fechaCaducidad: item.producto.caducidad,
+            });
+
+            await nuevaEntrada.save();
+        }
+
+        requisicionCompra.aprobacion = true;
+        await requisicionCompra.save();
+
+        res.status(200).json({ message: "Requisición aprobada, productos añadidos al inventario y registro de entrada creado" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Actualizar una requisición de compra
+export const updateRequisicionCompra = async (req, res) => {
+    try {
+        const requisicionCompra = await RequisicionCompra.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!requisicionCompra) {
+            return res.status(404).json({ error: "Requisición de compra no encontrada" });
+        }
+        res.status(200).json(requisicionCompra);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };

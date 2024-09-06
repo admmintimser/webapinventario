@@ -1,14 +1,21 @@
-// routes/productoRoutes.js
-const express = require('express');
+import express from "express";
+import {
+    createProducto,  
+    getProductos,
+    getProducto,  
+    updateProducto,  
+    deleteProducto
+    }  from "../controllers/productoController.js";
+
 const router = express.Router();
-const productoController = require('../controllers/productoController');
 
-router.post('/', productoController.createProducto);
-router.get('/', productoController.getProductos);
-router.get('/:id', productoController.getProducto);
-router.put('/:id', productoController.updateProducto);
-router.delete('/:id', productoController.deleteProducto);
+router.post('/',  createProducto);
+router.get('/',  getProductos);
+router.get('/:id',  getProducto);
+router.put('/:id',  updateProducto);
+router.delete('/:id',  deleteProducto);
 
-module.exports = router;
+export default router;
+
 
 // Rutas similares para las demás entidades.

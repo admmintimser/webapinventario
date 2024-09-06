@@ -1,10 +1,8 @@
-// controllers/ubicacionController.js
-const Ubicacion = require('../models/Ubicacion');
-const Inventario = require('../models/Inventario');
-const Producto = require('../models/Producto');
-const mongoose = require('mongoose');
+import { Inventario } from "../models/Inventario.js";
+import { Producto } from "../models/Producto.js";
+import { Ubicacion } from "../models/Ubicacion.js";
 
-exports.getUbicaciones = async (req, res) => {
+  export const getUbicaciones = async (req, res) => {
     try {
         // Fetch all locations
         const ubicaciones = await Ubicacion.find();
@@ -27,7 +25,7 @@ exports.getUbicaciones = async (req, res) => {
 };
 
 // Obtener productos por ubicación
-exports.getProductsByUbicacion = async (req, res) => {
+  export const getProductsByUbicacion = async (req, res) => {
     try {
         const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
         if (inventarios.length === 0) {
@@ -41,7 +39,7 @@ exports.getProductsByUbicacion = async (req, res) => {
 
 
 
-exports.createUbicacion = async (req, res) => {
+  export const createUbicacion = async (req, res) => {
     try {
         const ubicacion = new Ubicacion(req.body);
         await ubicacion.save();
@@ -51,7 +49,7 @@ exports.createUbicacion = async (req, res) => {
     }
 };
 
-exports.getUbicacion = async (req, res) => {
+  export const getUbicacion = async (req, res) => {
     try {
         const ubicacion = await Ubicacion.findById(req.params.id);
         if (!ubicacion) {
@@ -63,7 +61,7 @@ exports.getUbicacion = async (req, res) => {
     }
 };
 
-exports.updateUbicacion = async (req, res) => {
+  export const updateUbicacion = async (req, res) => {
     try {
         const ubicacion = await Ubicacion.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!ubicacion) {
@@ -75,7 +73,7 @@ exports.updateUbicacion = async (req, res) => {
     }
 };
 
-exports.deleteUbicacion = async (req, res) => {
+  export const deleteUbicacion = async (req, res) => {
     try {
         const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
         if (!ubicacion) {
@@ -87,7 +85,7 @@ exports.deleteUbicacion = async (req, res) => {
     }
 };
 
-exports.bulkUploadUbicaciones = async (req, res) => {
+  export const bulkUploadUbicaciones = async (req, res) => {
     try {
         const ubicaciones = req.body; 
         

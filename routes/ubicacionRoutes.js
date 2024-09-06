@@ -1,17 +1,29 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const ubicacionController = require('../controllers/ubicacionController');
 
-router.post('/', ubicacionController.createUbicacion);
-router.get('/', ubicacionController.getUbicaciones);
+import {
+    createUbicacion,  
+    getUbicaciones,
+    getProductsByUbicacion,  
+    getUbicacion,  
+    updateUbicacion, 
+    deleteUbicacion,
+    bulkUploadUbicaciones
+    }  from "../controllers/ubicacionController.js";
+
+
+router.post('/',  createUbicacion);
+router.get('/',  getUbicaciones);
 
 // Place this route before the `/:id` route
-router.get('/:id/productos', ubicacionController.getProductsByUbicacion);
+router.get('/:id/productos',getProductsByUbicacion);
 
-router.get('/:id', ubicacionController.getUbicacion);
-router.put('/:id', ubicacionController.updateUbicacion);
-router.delete('/:id', ubicacionController.deleteUbicacion);
+router.get('/:id',  getUbicacion);
+router.put('/:id',  updateUbicacion);
+router.delete('/:id',  deleteUbicacion);
 
-router.post('/bulk-upload', ubicacionController.bulkUploadUbicaciones);
+router.post('/bulk-upload',  bulkUploadUbicaciones);
 
-module.exports = router;
+export default router;
+
+

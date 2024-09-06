@@ -1,5 +1,8 @@
-const mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import mongoose from "mongoose";
+import mongooseSequence from 'mongoose-sequence';
+
+// Initialize the AutoIncrement plugin with mongoose
+const AutoIncrement = mongooseSequence(mongoose);
 
 const ubicacionSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
@@ -8,4 +11,4 @@ const ubicacionSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Ubicacion', ubicacionSchema);
+export const Ubicacion = mongoose.model('Ubicacion', ubicacionSchema);

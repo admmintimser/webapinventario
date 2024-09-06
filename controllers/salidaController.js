@@ -1,11 +1,10 @@
-// controllers/salidaController.js
-const Salida = require('../models/Salida');
-const Inventario = require('../models/Inventario');
-const Producto = require('../models/Producto');
-const Destino = require('../models/Destino'); 
+import { Salida } from "../models/Salida.js";
+import { Inventario } from "../models/Inventario.js";
+import { Producto } from "../models/Producto.js";
+import { Destino } from "../models/Destino.js";
+import { Ubicacion } from "../models/Ubicacion.js";
 
-
-exports.createSalida = async (req, res) => {
+  export const createSalida = async (req, res) => {
     try {
         const { producto, cantidadSalida, ubicacion } = req.body;
 
@@ -42,7 +41,7 @@ exports.createSalida = async (req, res) => {
 };
 
 
-exports.getSalidas = async (req, res) => {
+  export const getSalidas = async (req, res) => {
     try {
         const { destino } = req.query;
         let query = {};
@@ -59,7 +58,7 @@ exports.getSalidas = async (req, res) => {
     }
 };
 
-exports.getSalida = async (req, res) => {
+  export const getSalida = async (req, res) => {
     try {
         const salida = await Salida.findById(req.params.id).populate('producto');
         if (!salida) {
@@ -71,7 +70,7 @@ exports.getSalida = async (req, res) => {
     }
 };
 
-exports.updateSalida = async (req, res) => {
+  export const updateSalida = async (req, res) => {
     try {
         const salida = await Salida.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!salida) {
@@ -83,7 +82,7 @@ exports.updateSalida = async (req, res) => {
     }
 };
 
-exports.deleteSalida = async (req, res) => {
+  export const deleteSalida = async (req, res) => {
     try {
         const salida = await Salida.findByIdAndDelete(req.params.id);
         if (!salida) {

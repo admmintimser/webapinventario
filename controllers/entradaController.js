@@ -1,103 +1,84 @@
-// controllers/ubicacionController.js
-const Ubicacion = require('../models/Ubicacion');
-const Inventario = require('../models/Inventario');
-const Producto = require('../models/Producto');
-const mongoose = require('mongoose');
+// controllers/entradaController.js
+import { Entrada } from '../models/Entrada.js';
+import { Inventario }  from '../models/Inventario.js';
+import { Producto } from '../models/Producto.js';
 
-exports.getUbicaciones = async (req, res) => {
+export const createEntrada = async (req, res) => {
     try {
-        // Fetch all locations
-        const ubicaciones = await Ubicacion.find();
+        const entrada = new Entrada(req.body);
+        await entrada.save();
 
-        // For each location, count the number of products associated with it
-        const ubicacionesWithProductCount = await Promise.all(
-            ubicaciones.map(async (ubicacion) => {
-                const productCount = await Producto.countDocuments({ ubicacion: ubicacion._id });
-                return {
-                    ...ubicacion.toObject(),
-                    productCount, // Add the product count to each location
-                };
-            })
-        );
+        // Encontrar el inventario asociado al producto, lote y ubicación
+        let inventario = await Inventario.findOne({ producto: entrada.producto, lote: entrada.lote, ubicacion: entrada.ubicacion });
 
-        res.status(200).json(ubicacionesWithProductCount);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+        // Obtener detalles del producto para calcular la cantidad total a agregar
+        const producto = await Producto.findById(entrada.producto);
+        const cantidadToAdd = entrada.cantidadEmpaques * producto.cantidadPorEmpaque;
 
-// Obtener productos por ubicación
-exports.getProductsByUbicacion = async (req, res) => {
-    try {
-        const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
-        if (inventarios.length === 0) {
-            return res.status(404).json({ error: 'No hay productos en esta ubicación' });
-        }
-        res.status(200).json(inventarios);  // Devolvemos los inventarios, que ahora incluyen el producto y la cantidad disponible
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-
-
-exports.createUbicacion = async (req, res) => {
-    try {
-        const ubicacion = new Ubicacion(req.body);
-        await ubicacion.save();
-        res.status(201).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.getUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findById(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(200).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.updateUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(200).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.deleteUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(204).json({ message: "Ubicación eliminada" });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.bulkUploadUbicaciones = async (req, res) => {
-    try {
-        const ubicaciones = req.body; 
-        
-        if (!Array.isArray(ubicaciones)) {
-            return res.status(400).json({ error: 'El formato del archivo debe ser un array de ubicaciones' });
+        if (inventario) {
+            // Si ya existe en el inventario, actualizar la cantidad disponible
+            inventario.cantidadDisponible += cantidadToAdd;
+            inventario.caducidad = entrada.fechaCaducidad; // Actualizar la fecha de caducidad si es necesario
+            await inventario.save();
+        } else {
+            // Si no existe, crear un nuevo registro en el inventario
+            inventario = new Inventario({
+                producto: entrada.producto,
+                cantidadDisponible: cantidadToAdd,
+                caducidad: entrada.fechaCaducidad,
+                lote: entrada.lote,
+                ubicacion: entrada.ubicacion // Asociar la ubicación
+            });
+            await inventario.save();
         }
 
-        const savedUbicaciones = await Ubicacion.insertMany(ubicaciones);
-        res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
+        res.status(201).json(entrada);
     } catch (error) {
-        res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const getEntradas = async (req, res) => {
+    try {
+        const entradas = await Entrada.find().populate('producto ubicacion');
+        res.status(200).json(entradas);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const getEntrada = async (req, res) => {
+    try {
+        const entrada = await Entrada.findById(req.params.id).populate('producto ubicacion');
+        if (!entrada) {
+            return res.status(404).json({ error: "Entrada no encontrada" });
+        }
+        res.status(200).json(entrada);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const updateEntrada = async (req, res) => {
+    try {
+        const entrada = await Entrada.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!entrada) {
+            return res.status(404).json({ error: "Entrada no encontrada" });
+        }
+        res.status(200).json(entrada);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const deleteEntrada = async (req, res) => {
+    try {
+        const entrada = await Entrada.findByIdAndDelete(req.params.id);
+        if (!entrada) {
+            return res.status(404).json({ error: "Entrada no encontrada" });
+        }
+        res.status(204).json({ message: "Entrada eliminada" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };

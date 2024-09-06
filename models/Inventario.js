@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 // models/Inventario.js
 const inventarioSchema = new mongoose.Schema({
@@ -11,4 +11,4 @@ const inventarioSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Inventario', inventarioSchema);
+export const Inventario = mongoose.model('Inventario', inventarioSchema);

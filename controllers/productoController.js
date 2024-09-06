@@ -1,7 +1,8 @@
 // controllers/productoController.js
-const Producto = require('../models/Producto');
 
-exports.createProducto = async (req, res) => {
+import { Producto } from "../models/Producto.js";
+
+  export const createProducto = async (req, res) => {
     try {
         const producto = new Producto(req.body);
         await producto.save();
@@ -11,7 +12,7 @@ exports.createProducto = async (req, res) => {
     }
 };
 
-exports.getProductos = async (req, res) => {
+  export const getProductos = async (req, res) => {
     try {
       const productos = await Producto.find().populate('proveedor');
       res.status(200).json(productos);
@@ -20,7 +21,7 @@ exports.getProductos = async (req, res) => {
     }
   };
 
-exports.getProducto = async (req, res) => {
+  export const getProducto = async (req, res) => {
     try {
         const producto = await Producto.findById(req.params.id).populate('proveedor');
         if (!producto) {
@@ -32,7 +33,7 @@ exports.getProducto = async (req, res) => {
     }
 };
 
-exports.updateProducto = async (req, res) => {
+  export const updateProducto = async (req, res) => {
     try {
         const producto = await Producto.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!producto) {
@@ -44,7 +45,7 @@ exports.updateProducto = async (req, res) => {
     }
 };
 
-exports.deleteProducto = async (req, res) => {
+  export const deleteProducto = async (req, res) => {
     try {
         const producto = await Producto.findByIdAndDelete(req.params.id);
         if (!producto) {

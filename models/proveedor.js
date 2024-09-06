@@ -1,5 +1,8 @@
-const mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import mongoose from "mongoose";
+import mongooseSequence from 'mongoose-sequence';
+
+// Initialize the AutoIncrement plugin with mongoose
+const AutoIncrement = mongooseSequence(mongoose);
 // models/Proveedor.js
 const proveedorSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
@@ -14,4 +17,4 @@ const proveedorSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Proveedor', proveedorSchema);
+export const Proveedor = mongoose.model('Proveedor', proveedorSchema);

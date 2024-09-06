@@ -1,5 +1,5 @@
 // models/Destino.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const destinoSchema = new mongoose.Schema({
     nombre: { type: String, required: true, unique: true },
@@ -13,4 +13,4 @@ const destinoSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Destino', destinoSchema);
+export const Destino = mongoose.model('Destino', destinoSchema);

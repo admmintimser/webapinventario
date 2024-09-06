@@ -1,12 +1,19 @@
-// routes/entradaRoutes.js
-const express = require('express');
+import express from "express";
+import {
+    createEntrada,  
+    getEntradas,
+    getEntrada,  
+    updateEntrada,  
+    deleteEntrada
+    }  from "../controllers/entradaController.js";
+
 const router = express.Router();
-const entradaController = require('../controllers/entradaController');
 
-router.post('/', entradaController.createEntrada);
-router.get('/', entradaController.getEntradas);
-router.get('/:id', entradaController.getEntrada);
-router.put('/:id', entradaController.updateEntrada);
-router.delete('/:id', entradaController.deleteEntrada);
+router.post('/',  createEntrada);
+router.get('/',  getEntradas);
+router.get('/:id',  getEntrada);
+router.put('/:id',  updateEntrada);
+router.delete('/:id',  deleteEntrada);
 
-module.exports = router;
+export default router;
+

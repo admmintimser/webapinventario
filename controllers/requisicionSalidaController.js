@@ -1,103 +1,56 @@
-// controllers/ubicacionController.js
-const Ubicacion = require('../models/Ubicacion');
-const Inventario = require('../models/Inventario');
-const Producto = require('../models/Producto');
-const mongoose = require('mongoose');
+import { RequisicionSalida } from '../models/RequisicionSalida.js';
 
-exports.getUbicaciones = async (req, res) => {
+export const createRequisicionSalida = async (req, res) => {
     try {
-        // Fetch all locations
-        const ubicaciones = await Ubicacion.find();
-
-        // For each location, count the number of products associated with it
-        const ubicacionesWithProductCount = await Promise.all(
-            ubicaciones.map(async (ubicacion) => {
-                const productCount = await Producto.countDocuments({ ubicacion: ubicacion._id });
-                return {
-                    ...ubicacion.toObject(),
-                    productCount, // Add the product count to each location
-                };
-            })
-        );
-
-        res.status(200).json(ubicacionesWithProductCount);
+        const requisicionSalida = new RequisicionSalida(req.body);
+        await requisicionSalida.save();
+        res.status(201).json(requisicionSalida);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-// Obtener productos por ubicación
-exports.getProductsByUbicacion = async (req, res) => {
+export const getRequisicionesSalida = async (req, res) => {
     try {
-        const inventarios = await Inventario.find({ ubicacion: req.params.id }).populate('producto');  // Buscamos inventarios por ubicación
-        if (inventarios.length === 0) {
-            return res.status(404).json({ error: 'No hay productos en esta ubicación' });
+        const requisicionesSalida = await RequisicionSalida.find().populate('productos.producto');
+        res.status(200).json(requisicionesSalida);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const getRequisicionSalida = async (req, res) => {
+    try {
+        const requisicionSalida = await RequisicionSalida.findById(req.params.id).populate('productos.producto');
+        if (!requisicionSalida) {
+            return res.status(404).json({ error: "Requisición de salida no encontrada" });
         }
-        res.status(200).json(inventarios);  // Devolvemos los inventarios, que ahora incluyen el producto y la cantidad disponible
+        res.status(200).json(requisicionSalida);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-
-
-exports.createUbicacion = async (req, res) => {
+export const updateRequisicionSalida = async (req, res) => {
     try {
-        const ubicacion = new Ubicacion(req.body);
-        await ubicacion.save();
-        res.status(201).json(ubicacion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.getUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findById(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
+        const requisicionSalida = await RequisicionSalida.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!requisicionSalida) {
+            return res.status(404).json({ error: "Requisición de salida no encontrada" });
         }
-        res.status(200).json(ubicacion);
+        res.status(200).json(requisicionSalida);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-exports.updateUbicacion = async (req, res) => {
+export const deleteRequisicionSalida = async (req, res) => {
     try {
-        const ubicacion = await Ubicacion.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
+        const requisicionSalida = await RequisicionSalida.findByIdAndDelete(req.params.id);
+        if (!requisicionSalida) {
+            return res.status(404).json({ error: "Requisición de salida no encontrada" });
         }
-        res.status(200).json(ubicacion);
+        res.status(204).json({ message: "Requisición de salida eliminada" });
     } catch (error) {
         res.status(400).json({ error: error.message });
-    }
-};
-
-exports.deleteUbicacion = async (req, res) => {
-    try {
-        const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
-        }
-        res.status(204).json({ message: "Ubicación eliminada" });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.bulkUploadUbicaciones = async (req, res) => {
-    try {
-        const ubicaciones = req.body; 
-        
-        if (!Array.isArray(ubicaciones)) {
-            return res.status(400).json({ error: 'El formato del archivo debe ser un array de ubicaciones' });
-        }
-
-        const savedUbicaciones = await Ubicacion.insertMany(ubicaciones);
-        res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
-    } catch (error) {
-        res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
     }
 };

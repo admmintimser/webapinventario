@@ -1,8 +1,7 @@
-// controllers/destinoController.js
-const Destino = require('../models/Destino');
 
+import { Destino } from "../models/Destino.js";
 // Crear un nuevo destino
-exports.createDestino = async (req, res) => {
+  export const createDestino = async (req, res) => {
     try {
         const destino = new Destino(req.body);
         await destino.save();
@@ -13,7 +12,7 @@ exports.createDestino = async (req, res) => {
 };
 
 // Obtener todos los destinos
-exports.getDestinos = async (req, res) => {
+  export const getDestinos = async (req, res) => {
     try {
         const destinos = await Destino.find().populate('productos.producto');
         res.status(200).json(destinos);
@@ -23,7 +22,7 @@ exports.getDestinos = async (req, res) => {
 };
 
 // Obtener un destino por ID
-exports.getDestino = async (req, res) => {
+  export const getDestino = async (req, res) => {
     try {
         const destino = await Destino.findById(req.params.id).populate('productos.producto');
         if (!destino) {
@@ -36,7 +35,7 @@ exports.getDestino = async (req, res) => {
 };
 
 // Actualizar un destino
-exports.updateDestino = async (req, res) => {
+  export const updateDestino = async (req, res) => {
     try {
         const destino = await Destino.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!destino) {
@@ -49,7 +48,7 @@ exports.updateDestino = async (req, res) => {
 };
 
 // Eliminar un destino
-exports.deleteDestino = async (req, res) => {
+  export const deleteDestino = async (req, res) => {
     try {
         const destino = await Destino.findByIdAndDelete(req.params.id);
         if (!destino) {

@@ -1,17 +1,24 @@
-// routes/requisicionCompraRoutes.js
+import express from "express";
 
-const express = require('express');
+import {
+    createRequisicionCompra,  
+    getRequisicionesCompra,
+    getRequisicionCompra,  
+    updateRequisicionCompra,  
+    deleteRequisicionCompra,
+    updateProductStatus
+    }  from "../controllers/requisicionCompraController.js";
+
 const router = express.Router();
-const requisicionCompraController = require('../controllers/requisicionCompraController');
 
-router.post('/', requisicionCompraController.createRequisicionCompra);
-router.get('/', requisicionCompraController.getRequisicionesCompra);
-router.get('/:id', requisicionCompraController.getRequisicionCompra);
-router.put('/:id', requisicionCompraController.updateRequisicionCompra);
-router.delete('/:id', requisicionCompraController.deleteRequisicionCompra);
-router.post('/:id/approve', requisicionCompraController.approveRequisicionCompra);
+router.post('/', createRequisicionCompra);
+router.get('/', getRequisicionesCompra);
+router.get('/:id', getRequisicionCompra);
+router.put('/:id', updateRequisicionCompra);
+router.delete('/:id', deleteRequisicionCompra);
 
 // Nueva ruta para actualizar el estatus de un producto
-router.put('/:id/producto/:productId/estatus', requisicionCompraController.updateProductStatus);
+router.put('/:id/producto/:productId/estatus', updateProductStatus);
 
-module.exports = router;
+export default router;
+

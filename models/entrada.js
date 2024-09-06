@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const entradaSchema = new mongoose.Schema({
     producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto', required: true },
@@ -12,4 +12,4 @@ const entradaSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Entrada', entradaSchema);
+export const Entrada = mongoose.model('Entrada', entradaSchema);

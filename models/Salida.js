@@ -1,5 +1,4 @@
-// models/Salida.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const salidaSchema = new mongoose.Schema({
     producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto', required: true },
@@ -11,4 +10,4 @@ const salidaSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Salida', salidaSchema);
+export const Salida = mongoose.model('Salida', salidaSchema);

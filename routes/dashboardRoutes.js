@@ -1,8 +1,9 @@
-const express = require('express');
+import express from "express";
+import { Inventario } from "../models/Inventario.js";
+import { RequisicionSalida } from "../models/RequisicionSalida.js";
+import { Proveedor } from "../models/Proveedor.js";
+
 const router = express.Router();
-const Inventario = require('../models/Inventario');
-const RequisicionSalida = require('../models/RequisicionSalida');
-const Proveedor = require('../models/Proveedor');
 
 // Producto con más stock
 router.get('/product-most-stock', async (req, res) => {
@@ -83,4 +84,4 @@ router.get('/total-stock-and-test-capacity', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

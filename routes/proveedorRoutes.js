@@ -1,13 +1,23 @@
-// routes/proveedorRoutes.js
-const express = require('express');
+import express from "express";
+
+import {
+    createProveedor,  
+    getProveedores,
+    getProveedor,  
+    updateProveedor,  
+    deleteProveedor,
+    uploadProveedoresMasivos
+
+    }  from "../controllers/proveedorController.js";
+
 const router = express.Router();
-const proveedorController = require('../controllers/proveedorController');
 
-router.post('/', proveedorController.createProveedor);
-router.get('/', proveedorController.getProveedores);
-router.get('/:id', proveedorController.getProveedor);
-router.put('/:id', proveedorController.updateProveedor);
-router.delete('/:id', proveedorController.deleteProveedor);
-router.post('/upload-masivo', proveedorController.uploadProveedoresMasivos);
+router.post('/',  createProveedor);
+router.get('/',  getProveedores);
+router.get('/:id',  getProveedor);
+router.put('/:id',  updateProveedor);
+router.delete('/:id',  deleteProveedor);
+router.post('/upload-masivo',  uploadProveedoresMasivos);
 
-module.exports = router;
+export default router;
+
