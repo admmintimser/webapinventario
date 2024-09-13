@@ -4,18 +4,24 @@ import { Producto } from "../models/Producto.js";
 import { Destino } from "../models/Destino.js";
 import { Ubicacion } from "../models/Ubicacion.js";
 
-  export const createSalida = async (req, res) => {
+export const createSalida = async (req, res) => {
     try {
-        const { producto, cantidadSalida, ubicacion } = req.body;
+        const { producto, cantidadSalida, ubicacion, destino } = req.body;
 
-        // Obtener todas las entradas de inventario para el producto, lote y ubicación
+        // Verificar que el producto, destino y ubicación existen
+        const productoObj = await Producto.findById(producto);
+        const destinoObj = await Destino.findById(destino);
         const inventarios = await Inventario.find({ producto, ubicacion }).sort({ createdAt: 1 });
+
+        if (!productoObj || !destinoObj) {
+            return res.status(404).json({ error: "Producto o destino no encontrado." });
+        }
 
         let cantidadRestante = cantidadSalida;
 
+        // Actualizar el inventario
         for (let inventario of inventarios) {
             if (cantidadRestante <= 0) break;
-
             if (inventario.cantidadDisponible >= cantidadRestante) {
                 inventario.cantidadDisponible -= cantidadRestante;
                 cantidadRestante = 0;
@@ -31,9 +37,10 @@ import { Ubicacion } from "../models/Ubicacion.js";
             return res.status(400).json({ error: 'Cantidad de salida supera la cantidad disponible en el inventario' });
         }
 
-        // Crear la nueva salida si la cantidad restante es 0
-        const salida = new Salida(req.body);
+        // Crear la nueva salida
+        const salida = new Salida({ producto, cantidadSalida, ubicacion, destino });
         await salida.save();
+
         res.status(201).json(salida);
     } catch (error) {
         res.status(400).json({ error: error.message });

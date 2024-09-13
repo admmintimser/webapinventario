@@ -1,4 +1,3 @@
-// models/Destino.js
 import mongoose from "mongoose";
 
 const destinoSchema = new mongoose.Schema({

@@ -5,7 +5,7 @@ const salidaSchema = new mongoose.Schema({
     fechaSalida: { type: Date, default: Date.now },
     cantidadSalida: { type: Number, required: true },
     destino: { type: mongoose.Schema.Types.ObjectId, ref: 'Destino', required: true },
-    ubicacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Ubicacion', required: true }, // Relación con Ubicacion
+    ubicacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Ubicacion', required: true },
 }, {
     timestamps: true,
 });

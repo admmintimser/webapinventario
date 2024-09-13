@@ -2,6 +2,17 @@ import { Ubicacion } from "../models/Ubicacion.js";
 import { Inventario } from "../models/Inventario.js";
 import { Producto } from "../models/Producto.js";
 
+export const getInventarios = async (req, res) => {
+    try {
+        // Populate 'producto' y 'ubicacion' para obtener los detalles completos
+        const inventarios = await Inventario.find()
+            .populate('producto') // Esto obtiene los detalles del producto
+            .populate('ubicacion'); // Esto obtiene los detalles de la ubicación
+        res.status(200).json(inventarios);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
   export const getUbicaciones = async (req, res) => {
     try {
         // Fetch all locations
@@ -73,13 +84,13 @@ import { Producto } from "../models/Producto.js";
     }
 };
 
-  export const deleteUbicacion = async (req, res) => {
+  export const deleteInventario = async (req, res) => {
     try {
-        const ubicacion = await Ubicacion.findByIdAndDelete(req.params.id);
-        if (!ubicacion) {
-            return res.status(404).json({ error: "Ubicación no encontrada" });
+        const inventario = await Inventario.findByIdAndDelete(req.params.id);
+        if (!inventario) {
+            return res.status(404).json({ error: "Inventario no encontrada" });
         }
-        res.status(204).json({ message: "Ubicación eliminada" });
+        res.status(204).json({ message: "Inventario eliminada" });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -97,5 +108,25 @@ import { Producto } from "../models/Producto.js";
         res.status(201).json({ message: 'Ubicaciones subidas correctamente', savedUbicaciones });
     } catch (error) {
         res.status(400).json({ error: `Error al subir las ubicaciones: ${error.message}` });
+    }
+};
+
+export const getUbicacionesPorProducto = async (req, res) => {
+    try {
+        const { productoId } = req.params;
+
+        // Busca en el inventario las ubicaciones que tienen el producto específico
+        const inventarios = await Inventario.find({ producto: productoId }).populate('ubicacion');
+
+        if (inventarios.length === 0) {
+            return res.status(404).json({ error: 'No se encontraron ubicaciones para este producto' });
+        }
+
+        // Extraer solo las ubicaciones del inventario
+        const ubicaciones = inventarios.map((inventario) => inventario.ubicacion);
+
+        res.status(200).json(ubicaciones);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };
