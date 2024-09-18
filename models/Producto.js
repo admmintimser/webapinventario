@@ -15,7 +15,8 @@ const productoSchema = new mongoose.Schema({
     sku: { type: String, unique: true },
     cantidadPorEmpaque: { type: Number, required: true },
     alcancePreventix: { type: Boolean, default: false },
-    temperaturaAlmacenamiento: {type: Number}
+    temperaturaAlmacenamiento: {type: Number},
+    condicionesAlmacenamiento: {type: String}
 }, {
     timestamps: true,
 });

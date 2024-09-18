@@ -78,10 +78,11 @@ export const deleteRequisicionCompra = async (req, res) => {
     }
 };
 
-// Aprobar una requisición de compra
+// Aprobar una requisición de compra (solo cambia el valor booleano de "aprobacion")
 export const approveRequisicionCompra = async (req, res) => {
     try {
-        const requisicionCompra = await RequisicionCompra.findById(req.params.id).populate('productos.producto');
+        const requisicionCompra = await RequisicionCompra.findById(req.params.id);
+
         if (!requisicionCompra) {
             return res.status(404).json({ error: "Requisición de compra no encontrada" });
         }
@@ -90,41 +91,16 @@ export const approveRequisicionCompra = async (req, res) => {
             return res.status(400).json({ error: "La requisición ya está aprobada" });
         }
 
-        for (const item of requisicionCompra.productos) {
-            let existingInventario = await Inventario.findOne({ producto: item.producto._id });
-
-            if (existingInventario) {
-                existingInventario.cantidadDisponible += item.cantidadSolicitada;
-                await existingInventario.save();
-            } else {
-                existingInventario = new Inventario({
-                    producto: item.producto._id,
-                    cantidadDisponible: item.cantidadSolicitada,
-                    caducidad: item.producto.caducidad,
-                    lote: item.producto.lote
-                });
-                await existingInventario.save();
-            }
-
-            const nuevaEntrada = new Entrada({
-                producto: item.producto._id,
-                lote: item.producto.lote,
-                cantidadEmpaques: item.cantidadSolicitada,
-                temperatura: null,
-                fechaCaducidad: item.producto.caducidad,
-            });
-
-            await nuevaEntrada.save();
-        }
-
+        // Actualizar el valor booleano de "aprobacion"
         requisicionCompra.aprobacion = true;
         await requisicionCompra.save();
 
-        res.status(200).json({ message: "Requisición aprobada, productos añadidos al inventario y registro de entrada creado" });
+        res.status(200).json({ message: "Requisición aprobada exitosamente" });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Actualizar una requisición de compra
 export const updateRequisicionCompra = async (req, res) => {

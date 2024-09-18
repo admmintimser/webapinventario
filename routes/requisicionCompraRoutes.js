@@ -6,7 +6,8 @@ import {
     getRequisicionCompra,  
     updateRequisicionCompra,  
     deleteRequisicionCompra,
-    updateProductStatus
+    updateProductStatus,
+    approveRequisicionCompra 
     }  from "../controllers/requisicionCompraController.js";
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.delete('/:id', deleteRequisicionCompra);
 
 // Nueva ruta para actualizar el estatus de un producto
 router.put('/:id/producto/:productId/estatus', updateProductStatus);
+router.post('/:id/approve', approveRequisicionCompra);
 
 export default router;
 

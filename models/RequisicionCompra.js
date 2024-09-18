@@ -7,6 +7,8 @@ const AutoIncrement = mongooseSequence(mongoose);
 const requisicionCompraSchema = new mongoose.Schema({
     area: { type: String, required: true },
     nombreSolicitante: { type: String, required: true },
+    urgencia:{type: String},
+    detalleReq:{type: String},
     productos: [{
         producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto', required: true },
         cantidadSolicitada: { type: Number, required: true },

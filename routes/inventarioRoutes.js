@@ -8,7 +8,8 @@ import {
     deleteInventario,
     bulkUploadUbicaciones,
     getUbicacionesPorProducto,
-    getInventarios
+    getInventarios,
+    getLotePorUbicacion
 } from "../controllers/inventarioController.js";
 
 const router = express.Router();
@@ -21,5 +22,7 @@ router.delete('/:id', deleteInventario);  // Delete Ubicación by ID
 router.get('/ubicaciones/:productoId', getUbicacionesPorProducto); // Get ubicaciones by product
 router.get('/:id/productos', getProductsByUbicacion); // Get products by ubicación
 router.post('/bulk-upload', bulkUploadUbicaciones); // Bulk upload ubicaciones
+router.get('/lote/:productoId/:ubicacionId', getLotePorUbicacion);  // Nueva ruta para obtener lote por producto y ubicación
+
 
 export default router;

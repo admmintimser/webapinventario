@@ -6,6 +6,7 @@ const salidaSchema = new mongoose.Schema({
     cantidadSalida: { type: Number, required: true },
     destino: { type: mongoose.Schema.Types.ObjectId, ref: 'Destino', required: true },
     ubicacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Ubicacion', required: true },
+    lote:{ type: String},
 }, {
     timestamps: true,
 });

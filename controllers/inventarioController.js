@@ -130,3 +130,21 @@ export const getUbicacionesPorProducto = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+export const getLotePorUbicacion = async (req, res) => {
+    const { productoId, ubicacionId } = req.params;
+
+    try {
+        const inventario = await Inventario.findOne({
+            producto: productoId,
+            ubicacion: ubicacionId
+        });
+
+        if (!inventario || !inventario.lote) {
+            return res.status(404).json({ message: 'No se encontró el lote para esta ubicación y producto.' });
+        }
+
+        res.status(200).json({ lote: inventario.lote });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el lote', error });
+    }
+};

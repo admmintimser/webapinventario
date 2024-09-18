@@ -18,17 +18,20 @@ export const createSalida = async (req, res) => {
         }
 
         let cantidadRestante = cantidadSalida;
+        let loteSeleccionado = ''; // Nuevo campo para almacenar el lote
 
-        // Actualizar el inventario
+        // Actualizar el inventario y obtener el lote del producto en la ubicación seleccionada
         for (let inventario of inventarios) {
             if (cantidadRestante <= 0) break;
             if (inventario.cantidadDisponible >= cantidadRestante) {
                 inventario.cantidadDisponible -= cantidadRestante;
                 cantidadRestante = 0;
+                loteSeleccionado = inventario.lote; // Asignar el lote desde inventario
                 await inventario.save();
             } else {
                 cantidadRestante -= inventario.cantidadDisponible;
                 inventario.cantidadDisponible = 0;
+                loteSeleccionado = inventario.lote; // Asignar el lote desde inventario
                 await inventario.save();
             }
         }
@@ -37,8 +40,8 @@ export const createSalida = async (req, res) => {
             return res.status(400).json({ error: 'Cantidad de salida supera la cantidad disponible en el inventario' });
         }
 
-        // Crear la nueva salida
-        const salida = new Salida({ producto, cantidadSalida, ubicacion, destino });
+        // Crear la nueva salida con el lote
+        const salida = new Salida({ producto, cantidadSalida, ubicacion, destino, lote: loteSeleccionado });
         await salida.save();
 
         res.status(201).json(salida);
@@ -46,6 +49,7 @@ export const createSalida = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
   export const getSalidas = async (req, res) => {
