@@ -13,6 +13,7 @@ import inventarioRoutes from './routes/inventarioRoutes.js';
 import proveedorRoutes from './routes/proveedorRoutes.js';
 import ubicacionRoutes from './routes/ubicacionRoutes.js'; 
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import destinoRoutes  from'./routes/destinoRoutes.js';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/inventarios', inventarioRoutes);
 app.use('/api/proveedores', proveedorRoutes);
 app.use('/api/ubicaciones', ubicacionRoutes); 
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/destinos', destinoRoutes);
 
 
 
